@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.nollpointer.hereapp">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name="com.here.android.mpa.service.MapService"
+            android:label="HereApp"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="HereApp">
+                </action>
+            </intent-filter>
+        </service>
+
+
+        <meta-data android:name="com.here.android.maps.appid" android:value="H3rasbimQCxMcZ8PaCSI"/>
+        <meta-data android:name="com.here.android.maps.apptoken" android:value="IT-PaP_3p5hY3kxsYM1MkQ"/>
+        <meta-data android:name="com.here.android.maps.license.key" android:value="W0JXXuGbpQF54XIJee3GaXuCUg7nVrkZbdl583lJR/LzwbZ+uY68Ecf4oxAZGZw28r9cbFZi7a0bJCch++xwkEElQyy+lPn9BSnHha1rQBeCuXTcren32Byn2Uq39MtgH5KruAG+x7zvqxcKdJpYb68BBqNPBUWtuBps+C0ao2DMlc+c6dJ0cibrDRjd9nwaGhffewCZO+bN91Jyupyt2aKprWWXVuftf4IfIZHYFJmaWgF+ZMvn7wkK0zvwShutA/Z5bLvQoj5riG4VkIuwJYxWXhNvhB4d67RNtqOCXeugJFzZF21Qx0o3IIttppDDifX9n8q+PfiBEpT9yHTbcCgiN7nHt9GgMCczWkakaqrU51UNLO9qB+VMPCeyBxQDTueJtP0FuIOpj1j2s4k3ruUrxMoMuvGm7u9XOskESrpLFQR6ZVF0a19v8YnGAjgjU2kuBDSkEvt+3Ix29o14xjUCBLNv2BqVAVkcoM5slqepPB7gH/ivUrm2S0bSRN9DzfR9CKl30kzGpn4xZKLyRnWuMJChFBllXa0jgri6RSQb2Fpl5EaX3Ec2/DCqn5E6620gE4zBrKSV9ftGYiVqS+4t70SQc6EIv9AhkYIVNjpGRew9NjtjgA3K+QPVUIJzv+JmYaQfOsq0yaLoV7t6pL5SS94ShBB9Wxq962164/c="/>"/>
+
+
+    </application>
+
+</manifest>
