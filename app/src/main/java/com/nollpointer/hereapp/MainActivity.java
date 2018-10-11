@@ -2,12 +2,14 @@ package com.nollpointer.hereapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.MapMarker;
 
 import java.io.File;
 
@@ -17,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
 
     // map fragment embedded in this activity
     private MapFragment mapFragment = null;
+
+    private Toolbar toolbar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         // Search for the map fragment to finish setup by calling init().
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
 
+        toolbar = findViewById(R.id.toolbar);
+
         // Set up disk cache path for the map service for this application
         // It is recommended to use a path under your application folder for storing the disk cache
         boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
@@ -37,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
                 "HereApp"); /* ATTENTION! Do not forget to update {YOUR_INTENT_NAME} */
 
         if (!success) {
-            Toast.makeText(getApplicationContext(), "Unable to set isolated disk cache path.", Toast.LENGTH_LONG);
+            Toast.makeText(getApplicationContext(), "Unable to set isolated disk cache path.", Toast.LENGTH_LONG).show();
         } else {
             mapFragment.init(new OnEngineInitListener() {
                 @Override
@@ -51,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                         // Set the zoom level to the average between min and max
                         map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
 
-
+                        //map.addMapObject(new MapMarker(new GeoCoordinate(45.039496, 41.958023, 0.0)));
                     } else {
                         System.out.println("ERROR: Cannot initialize Map Fragment");
                     }
