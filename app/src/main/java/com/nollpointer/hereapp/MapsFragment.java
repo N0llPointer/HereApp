@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
@@ -29,8 +30,11 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.Image;
+import com.here.android.mpa.common.LocationDataSource;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
@@ -41,6 +45,7 @@ import com.here.android.mpa.mapping.MapScreenMarker;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class MapsFragment extends Fragment {
@@ -60,6 +65,7 @@ public class MapsFragment extends Fragment {
     private EditText searchEditText;
     private LinearLayout searchContainer;
     private AHBottomNavigation bottomNavigation;
+    private FloatingActionButton fab;
 
     private View mainView;
 
@@ -92,6 +98,8 @@ public class MapsFragment extends Fragment {
         drawerLayout = mainView.findViewById(R.id.drawer_layout);
 
         bottomNavigation = mainView.findViewById(R.id.bottom_navigation);
+
+        fab = mainView.findViewById(R.id.floatingActionButton);
 
         resultsRecycler = mainView.findViewById(R.id.results_recycler);
         resultsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -147,6 +155,34 @@ public class MapsFragment extends Fragment {
                 }
 
                 isEditTextHasFocus = hasFocus;
+            }
+        });
+        //TODO Разобраться с этой шляпой. Как меня она уже достала
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PositioningManager manager = PositioningManager.getInstance();
+                manager.start(PositioningManager.LocationMethod.GPS_NETWORK);
+                GeoPosition geo = manager.getPosition();
+                map.setCenter(geo.getCoordinate(),
+                        Map.Animation.LINEAR);
+
+                PositioningManager.OnPositionChangedListener positionListener = new
+                        PositioningManager.OnPositionChangedListener() {
+
+                            public void onPositionUpdated(PositioningManager.LocationMethod method,
+                                                          GeoPosition position, boolean isMapMatched) {
+                                    map.setCenter(position.getCoordinate(),
+                                            Map.Animation.NONE);
+                            }
+
+                            public void onPositionFixChanged(PositioningManager.LocationMethod method,
+                                                             PositioningManager.LocationStatus status) {
+
+                            }
+                        };
+
+                manager.addListener(new WeakReference<PositioningManager.OnPositionChangedListener>(positionListener));
             }
         });
 
