@@ -1,5 +1,6 @@
 package com.nollpointer.hereapp;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.os.Bundle;
@@ -17,10 +18,14 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -39,23 +44,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "HereApp";
 
-    public boolean isOnScreenMarkerShown = false;
+    private MapsFragment mapsFragment;
+    private LoginFragment loginFragment;
 
-    private Map map = null;
-
-    // map fragment embedded in this activity
-    private MapFragment mapFragment = null;
-
-    private Toolbar toolbar;
-    private RecyclerView resultsRecycler;
-    private DrawerLayout drawerLayout;
-    private EditText searchEditText;
-    private LinearLayout searchContainer;
-
-    private DrawerArrowDrawable arrow;
-
-    private MapScreenMarker screenMarker;
-    //private View splash_screen_view;
+    private FirebaseDatabase firebaseDatabase;
+    private DatabaseReference shopsDatabaseReference;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,173 +65,23 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
 
-        initializeViews();
+        mapsFragment = new MapsFragment();
+        loginFragment = new LoginFragment();
 
-        initialize();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        shopsDatabaseReference = firebaseDatabase.getReference().child("shops");
+
+
+        getSupportFragmentManager().beginTransaction().add(R.id.main_framelayout,loginFragment).commit();
     }
 
-    private void showOnScreenMarker(){
-        //toolbar.setNavigationIcon(R.drawable.ic_close);
-        //toolbar.getMenu().findItem(R.id.check).setVisible(true);
-        screenMarker = new MapScreenMarker();
-        Image image = new Image();
-        try {
-            image.setImageResource(R.drawable.ic_marker);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        screenMarker.setIcon(image);
-        View view = findViewById(R.id.container);
-        screenMarker.setScreenCoordinate(new PointF(view.getWidth()/2,view.getHeight()/2));
-        map.addMapObject(screenMarker);
-    }
-
-    private void initializeViews(){
-        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
-
-        toolbar = findViewById(R.id.toolbar);
-
-        drawerLayout = findViewById(R.id.drawer_layout);
-
-        resultsRecycler = findViewById(R.id.results_recycler);
-        resultsRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        searchEditText = findViewById(R.id.search_edit_text);
-
-        searchContainer = findViewById(R.id.search_results_container);
-
-        arrow = new DrawerArrowDrawable(this);
-        arrow.setProgress(0f);
-
-        toolbar.setNavigationIcon(arrow);
-
-        toolbar.inflateMenu(R.menu.toolbar_menu);
-
-        toolbar.getMenu().findItem(R.id.erase_text).setVisible(false);
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                drawerLayout.openDrawer(Gravity.START);
-            }
-        });
-
-        searchEditText.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-
-        searchEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus){
-                    showSearchUi();
-                }else{
-                    closeSearchUi();
-                }
-            }
-        });
-    }
-
-    //private void
-
-    private void showSearchUi(){
-        searchContainer.setVisibility(View.VISIBLE);
-        SearchResultCardsAdapter adapter = new SearchResultCardsAdapter();
-        resultsRecycler.setAdapter(adapter);
-
-    }
-
-    private void closeSearchUi(){
-        searchContainer.setVisibility(View.GONE);
-    }
-
-    private void hideOnScreenMarker(){
-        //toolbar.setNavigationIcon(R.drawable.ic_add_marker);
-        //toolbar.getMenu().findItem(R.id.check).setVisible(false);
-        map.removeMapObject(screenMarker);
-    }
-
-    private void loseFocus(){
-
+    public void showMapsFragment(){
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_framelayout,mapsFragment).commit();
     }
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(Gravity.START))
-            drawerLayout.closeDrawer(Gravity.START);
-        else if(searchEditText.isFocused())
-            loseFocus();
-        else
+        if(!mapsFragment.onBackPressed())
             super.onBackPressed();
-    }
-
-    private void initialize() {
-
-        // Set up disk cache path for the map service for this application
-        // It is recommended to use a path under your application folder for storing the disk cache
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps",
-                "HereApp"); /* ATTENTION! Do not forget to update {YOUR_INTENT_NAME} */
-
-        if (!success) {
-            Toast.makeText(getApplicationContext(), "Unable to set isolated disk cache path.", Toast.LENGTH_LONG).show();
-        } else {
-            mapFragment.init(new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-                    if (error == OnEngineInitListener.Error.NONE) {
-                        //splash_screen_view.setVisibility(View.GONE);
-
-                        // retrieve a reference of the map from the map fragment
-                        map = mapFragment.getMap();
-                        // Set the map center to the Vancouver region (no animation)
-                        map.setCenter(new GeoCoordinate(45.039496, 41.958023, 0.0),
-                                Map.Animation.LINEAR);
-                        // Set the zoom level to the average between min and max
-                        map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
-
-                        try {
-                            Image image = new Image();
-                            image.setImageResource(R.drawable.ic_marker);
-                            map.addMapObject(new MapMarker(new GeoCoordinate(45.039496, 41.958023),image));
-                        } catch (IOException e) {
-                            Log.wtf(TAG,e);
-                        }
-
-                        mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
-
-                            @Override
-                            public boolean onMapObjectsSelected(List<ViewObject> list) {
-                                for(ViewObject v: list){
-                                    MapObject m = (MapObject) v;
-                                    if(m instanceof MapMarker){
-                                        MapMarker marker = (MapMarker) v;
-                                        //GeoCoordinate coords = marker.getCoordinate();
-                                        Snackbar.make(findViewById(R.id.container),"Marker is clicked",Snackbar.LENGTH_SHORT).show();
-                                        break;
-                                    }
-                                }
-                                return true;
-                            }
-                        },0,false);
-                    } else {
-                        Log.wtf(TAG,"ERROR: Cannot initialize Map Fragment");
-                    }
-                }
-            });
-        }
     }
 }

@@ -1,118 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_framelayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:openDrawer="start">
+    android:layout_height="match_parent" />
 
+<!--<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/drawer_layout"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--tools:openDrawer="start">-->
 
-    <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:id="@+id/container">
+    <!--<FrameLayout-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+        <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:id="@+id/container">-->
 
-        <fragment
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            class="com.here.android.mpa.mapping.MapFragment"
-            android:id="@+id/mapfragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <!--<android.support.v7.widget.Toolbar-->
+        <!--<fragment-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--class="com.here.android.mpa.mapping.MapFragment"-->
+            <!--android:id="@+id/mapfragment"-->
             <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="?android:actionBarSize"-->
-            <!--android:id="@+id/toolbar"-->
-            <!--android:background="@color/colorPrimary"-->
-            <!--app:titleTextColor="@android:color/white"-->
-            <!--android:layout_gravity="top"-->
-            <!--app:title="@string/app_name" />-->
+            <!--android:layout_height="match_parent" />-->
+
+        <!--&lt;!&ndash;<android.support.v7.widget.Toolbar&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="?android:actionBarSize"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/toolbar"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:background="@color/colorPrimary"&ndash;&gt;-->
+            <!--&lt;!&ndash;app:titleTextColor="@android:color/white"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_gravity="top"&ndash;&gt;-->
+            <!--&lt;!&ndash;app:title="@string/app_name" />&ndash;&gt;-->
 
 
-        <android.support.v7.widget.CardView
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:focusableInTouchMode="true"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="29dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            app:cardElevation="2dp"
-            app:cardCornerRadius="5dp">
-
-            <LinearLayout
-                android:id="@+id/search_toolbar_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <android.support.v7.widget.Toolbar
-                    android:layout_gravity="top"
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    app:title="Google Play"
-                    android:layout_height="48dp">
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center_vertical"
-                        android:gravity="center_vertical"
-                        android:hint="Search"
-                        android:background="@android:color/transparent"
-                        android:id="@+id/search_edit_text"
-                        android:inputType="text"
-                        android:imeOptions="actionDone"/>
-
-                </android.support.v7.widget.Toolbar>
-
-                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:id="@+id/search_results_container"
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#7f616161" />
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/results_recycler"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/results_background" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-
-        </android.support.v7.widget.CardView>
-
-            <!--android:layout_marginTop="24dp"/>-->
-
-        <!--<View-->
+        <!--<android.support.v7.widget.CardView-->
+            <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+            <!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+            <!--android:focusableInTouchMode="true"-->
             <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:id="@+id/splash_screen_view"-->
-            <!--android:background="#e0ffffff" />-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="29dp"-->
+            <!--android:layout_marginStart="5dp"-->
+            <!--android:layout_marginEnd="5dp"-->
+            <!--app:cardElevation="2dp"-->
+            <!--app:cardCornerRadius="5dp">-->
 
-    </FrameLayout>
+            <!--<LinearLayout-->
+                <!--android:id="@+id/search_toolbar_card"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="vertical">-->
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/navigation_header"
-        app:menu="@menu/drawer_menu" />
+                <!--<android.support.v7.widget.Toolbar-->
+                    <!--android:layout_gravity="top"-->
+                    <!--android:id="@+id/toolbar"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--app:title="Google Play"-->
+                    <!--android:layout_height="48dp">-->
 
-</android.support.v4.widget.DrawerLayout>
+                    <!--<EditText-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="match_parent"-->
+                        <!--android:layout_gravity="center_vertical"-->
+                        <!--android:gravity="center_vertical"-->
+                        <!--android:hint="Search"-->
+                        <!--android:background="@android:color/transparent"-->
+                        <!--android:id="@+id/search_edit_text"-->
+                        <!--android:inputType="text"-->
+                        <!--android:imeOptions="actionDone"/>-->
+
+                <!--</android.support.v7.widget.Toolbar>-->
+
+                <!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+                    <!--android:id="@+id/search_results_container"-->
+                    <!--android:orientation="vertical"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:visibility="gone">-->
+
+                    <!--<View-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="1dp"-->
+                        <!--android:background="#7f616161" />-->
+
+                    <!--<android.support.v7.widget.RecyclerView-->
+                        <!--android:id="@+id/results_recycler"-->
+                        <!--android:layout_width="match_parent"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:background="@drawable/results_background" />-->
+
+                <!--</LinearLayout>-->
+
+            <!--</LinearLayout>-->
+
+
+        <!--</android.support.v7.widget.CardView>-->
+
+            <!--&lt;!&ndash;android:layout_marginTop="24dp"/>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<View&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:id="@+id/splash_screen_view"&ndash;&gt;-->
+            <!--&lt;!&ndash;android:background="#e0ffffff" />&ndash;&gt;-->
+
+    <!--</FrameLayout>-->
+
+    <!--<android.support.design.widget.NavigationView-->
+        <!--android:id="@+id/nav_view"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_gravity="start"-->
+        <!--android:fitsSystemWindows="true"-->
+        <!--app:headerLayout="@layout/navigation_header"-->
+        <!--app:menu="@menu/drawer_menu" />-->
+
+<!--</android.support.v4.widget.DrawerLayout>-->
