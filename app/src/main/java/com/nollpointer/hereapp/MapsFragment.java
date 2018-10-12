@@ -25,6 +25,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -56,6 +59,7 @@ public class MapsFragment extends Fragment {
     private DrawerLayout drawerLayout;
     private EditText searchEditText;
     private LinearLayout searchContainer;
+    private AHBottomNavigation bottomNavigation;
 
     private View mainView;
 
@@ -86,6 +90,8 @@ public class MapsFragment extends Fragment {
         toolbar = mainView.findViewById(R.id.toolbar);
 
         drawerLayout = mainView.findViewById(R.id.drawer_layout);
+
+        bottomNavigation = mainView.findViewById(R.id.bottom_navigation);
 
         resultsRecycler = mainView.findViewById(R.id.results_recycler);
         resultsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -143,9 +149,38 @@ public class MapsFragment extends Fragment {
                 isEditTextHasFocus = hasFocus;
             }
         });
+
+        AHBottomNavigationItem item1 =
+                new AHBottomNavigationItem("Что рядом?",
+                        R.drawable.ic_nearby);
+
+        AHBottomNavigationItem item2 =
+                new AHBottomNavigationItem("Акции",
+                        R.drawable.ic_sale);
+        bottomNavigation.addItem(item1);
+        bottomNavigation.addItem(item2);
+        bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
+        bottomNavigation.setDefaultBackgroundColor(Color.WHITE);
+        bottomNavigation.setAccentColor(getResources().getColor(R.color.colorAccent));
+
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+            @Override
+            public boolean onTabSelected(int position, boolean wasSelected) {
+
+                AHNotification notification = new AHNotification.Builder()
+                        .setText(Integer.toString(5))
+                        .setBackgroundColor(Color.YELLOW)
+                        .setTextColor(Color.BLACK)
+                        .build();
+                // Adding notification to last item.
+                bottomNavigation.setNotification(notification, position);
+                //notificationVisible = true;
+
+                return true;
+            }
+        });
     }
 
-    //private void
 
     private void showSearchUi(){
         arrow.setProgress(1f);
