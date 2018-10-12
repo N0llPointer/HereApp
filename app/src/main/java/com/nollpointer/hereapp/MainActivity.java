@@ -1,13 +1,24 @@
 package com.nollpointer.hereapp;
 
+import android.graphics.Color;
 import android.graphics.PointF;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoCoordinate;
@@ -36,17 +47,39 @@ public class MainActivity extends AppCompatActivity {
     private MapFragment mapFragment = null;
 
     private Toolbar toolbar;
+    private RecyclerView resultsRecycler;
+    private DrawerLayout drawerLayout;
+    private EditText searchEditText;
+    private LinearLayout searchContainer;
+
+    private DrawerArrowDrawable arrow;
+
     private MapScreenMarker screenMarker;
+    //private View splash_screen_view;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_main);
+
+        getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        initializeViews();
+
         initialize();
     }
 
     private void showOnScreenMarker(){
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back);
-        toolbar.getMenu().findItem(R.id.check).setVisible(true);
+        //toolbar.setNavigationIcon(R.drawable.ic_close);
+        //toolbar.getMenu().findItem(R.id.check).setVisible(true);
         screenMarker = new MapScreenMarker();
         Image image = new Image();
         try {
@@ -60,53 +93,99 @@ public class MainActivity extends AppCompatActivity {
         map.addMapObject(screenMarker);
     }
 
-    private void hideOnScreenMarker(){
-        toolbar.setNavigationIcon(R.drawable.ic_add_marker);
-        toolbar.getMenu().findItem(R.id.check).setVisible(false);
-        map.removeMapObject(screenMarker);
-    }
-
-    private void initialize() {
-        setContentView(R.layout.activity_main);
-
-        // Search for the map fragment to finish setup by calling init().
+    private void initializeViews(){
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
 
         toolbar = findViewById(R.id.toolbar);
 
-        toolbar.setNavigationIcon(R.drawable.ic_add_marker);
+        drawerLayout = findViewById(R.id.drawer_layout);
+
+        resultsRecycler = findViewById(R.id.results_recycler);
+        resultsRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        searchEditText = findViewById(R.id.search_edit_text);
+
+        searchContainer = findViewById(R.id.search_results_container);
+
+        arrow = new DrawerArrowDrawable(this);
+        arrow.setProgress(0f);
+
+        toolbar.setNavigationIcon(arrow);
 
         toolbar.inflateMenu(R.menu.toolbar_menu);
 
-        toolbar.getMenu().findItem(R.id.check).setVisible(false);
+        toolbar.getMenu().findItem(R.id.erase_text).setVisible(false);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isOnScreenMarkerShown) {
-                    hideOnScreenMarker();
-                } else {
-                    showOnScreenMarker();
-                }
-                isOnScreenMarkerShown = !isOnScreenMarkerShown;
+                drawerLayout.openDrawer(Gravity.START);
             }
         });
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if(menuItem.getItemId() == R.id.check){
-                    Image image = new Image();
-                    try {
-                        image.setImageResource(R.drawable.ic_marker);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    map.addMapObject(new MapMarker(map.getCenter(),image));
-                }
-                return true;
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
+
+        searchEditText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus){
+                    showSearchUi();
+                }else{
+                    closeSearchUi();
+                }
+            }
+        });
+    }
+
+    //private void
+
+    private void showSearchUi(){
+        searchContainer.setVisibility(View.VISIBLE);
+        SearchResultCardsAdapter adapter = new SearchResultCardsAdapter();
+        resultsRecycler.setAdapter(adapter);
+
+    }
+
+    private void closeSearchUi(){
+        searchContainer.setVisibility(View.GONE);
+    }
+
+    private void hideOnScreenMarker(){
+        //toolbar.setNavigationIcon(R.drawable.ic_add_marker);
+        //toolbar.getMenu().findItem(R.id.check).setVisible(false);
+        map.removeMapObject(screenMarker);
+    }
+
+    private void loseFocus(){
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawerLayout.isDrawerOpen(Gravity.START))
+            drawerLayout.closeDrawer(Gravity.START);
+        else if(searchEditText.isFocused())
+            loseFocus();
+        else
+            super.onBackPressed();
+    }
+
+    private void initialize() {
 
         // Set up disk cache path for the map service for this application
         // It is recommended to use a path under your application folder for storing the disk cache
@@ -121,11 +200,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
                     if (error == OnEngineInitListener.Error.NONE) {
+                        //splash_screen_view.setVisibility(View.GONE);
+
                         // retrieve a reference of the map from the map fragment
                         map = mapFragment.getMap();
                         // Set the map center to the Vancouver region (no animation)
                         map.setCenter(new GeoCoordinate(45.039496, 41.958023, 0.0),
-                                Map.Animation.BOW);
+                                Map.Animation.LINEAR);
                         // Set the zoom level to the average between min and max
                         map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
 
@@ -154,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         },0,false);
                     } else {
-                        System.out.println("ERROR: Cannot initialize Map Fragment");
+                        Log.wtf(TAG,"ERROR: Cannot initialize Map Fragment");
                     }
                 }
             });

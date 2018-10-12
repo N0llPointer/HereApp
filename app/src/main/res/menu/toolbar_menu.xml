@@ -3,10 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/check"
-        android:title="check"
+        android:id="@+id/erase_text"
+        android:title="Erase"
         android:orderInCategory="1"
-        android:icon="@drawable/ic_check"
+        android:icon="@drawable/ic_close"
+        app:showAsAction="always"
+        />
+
+    <item
+        android:id="@+id/voice_input"
+        android:title="Voice"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_voice"
         app:showAsAction="always"
         />
 
