@@ -9,11 +9,12 @@ import android.widget.TextView;
 import com.nollpointer.hereapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class BuyCardsAdapter extends RecyclerView.Adapter<BuyCardsAdapter.ViewHolder>{
-    private ArrayList<String> products;
+    private List<String> products;
 
-    public BuyCardsAdapter(ArrayList<String> products) {
+    public BuyCardsAdapter(List<String> products) {
         this.products = products;
     }
 

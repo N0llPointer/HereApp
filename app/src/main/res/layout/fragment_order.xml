@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:paddingTop="24dp"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="?android:actionBarSize"
+        android:background="@color/colorPrimary"
+        android:id="@+id/order_fragment_toolbar"
+        app:title="Order"
+        app:titleTextColor="@android:color/white"/>
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:fitsSystemWindows="true">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_marker"
+                android:gravity="center_vertical"
+                android:textAppearance="?android:textAppearanceLarge"
+                android:textColor="#808080"
+                android:drawablePadding="36dp"
+                android:id="@+id/order_fragment_address"
+                android:padding="10dp"
+                android:foreground="?android:attr/selectableItemBackground"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#808080" />
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/order_fragment_recycler_view" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Отозваться"
+                android:background="#808080"
+                android:textColor="#000000"
+                style="@android:style/Widget.Holo.Button.Borderless"/>
+
+            <!--<android.support.design.widget.FloatingActionButton-->
+                <!--android:id="@+id/buy_inside_cart"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="30dp"-->
+                <!--android:layout_gravity="bottom|end"-->
+                <!--android:src="@drawable/ic_cart"-->
+                <!--app:backgroundTint="@android:color/white"-->
+                <!--app:borderWidth="0dp"-->
+                <!--app:fabSize="normal"/>-->
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

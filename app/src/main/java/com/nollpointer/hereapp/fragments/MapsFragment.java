@@ -8,7 +8,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -37,16 +40,19 @@ import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.MapScreenMarker;
+import com.nollpointer.hereapp.MainActivity;
+import com.nollpointer.hereapp.Order;
 import com.nollpointer.hereapp.adapters.OrderDialogAdapter;
 import com.nollpointer.hereapp.dialogs.OrdersDialog;
 import com.nollpointer.hereapp.R;
 import com.nollpointer.hereapp.adapters.SearchResultCardsAdapter;
+import com.nollpointer.hereapp.views.OrderShowView;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-public class MapsFragment extends Fragment implements OrderDialogAdapter.Listener{
+public class MapsFragment extends Fragment implements OrderDialogAdapter.Listener, OrderShowView.Listener{
 
     public static final String TAG = "HereApp";
 
@@ -64,8 +70,15 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
     private LinearLayout searchContainer;
     private AHBottomNavigation bottomNavigation;
     private FloatingActionButton fab;
+    private FrameLayout container;
+
+    private CardView toolbarCardView;
+
+    private OrdersDialog dialog;
 
     private View mainView;
+
+    private OrderShowView orderShowView;
 
     private DrawerArrowDrawable arrow;
 
@@ -97,7 +110,11 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
 
         bottomNavigation = mainView.findViewById(R.id.bottom_navigation);
 
+        container = mainView.findViewById(R.id.container);
+
         fab = mainView.findViewById(R.id.floatingActionButton);
+
+        toolbarCardView = mainView.findViewById(R.id.maps_fragment_toolbar_card);
 
         resultsRecycler = mainView.findViewById(R.id.results_recycler);
         resultsRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -105,6 +122,11 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         searchEditText = mainView.findViewById(R.id.search_edit_text);
 
         searchContainer = mainView.findViewById(R.id.search_results_container);
+
+        orderShowView = new OrderShowView(getActivity());
+        orderShowView.setListener(this);
+
+        container.addView(orderShowView);
 
         arrow = new DrawerArrowDrawable(getContext());
         arrow.setProgress(0f);
@@ -198,7 +220,9 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
             public boolean onTabSelected(int position, boolean wasSelected) {
 
                 if(position == 1){
-                    new OrdersDialog().show(getFragmentManager(),"TAG");
+                    dialog = new OrdersDialog();
+                    dialog.setListener(MapsFragment.this);
+                    dialog.show(getFragmentManager(),"TAG");
                 }
                 return true;
             }
@@ -211,7 +235,6 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         searchContainer.setVisibility(View.VISIBLE);
         SearchResultCardsAdapter adapter = new SearchResultCardsAdapter();
         resultsRecycler.setAdapter(adapter);
-
     }
 
     private void closeSearchUi(){
@@ -229,9 +252,45 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         }
     }
 
+    public void hideUiElements(){
+        toolbarCardView.setVisibility(View.GONE);
+        bottomNavigation.setVisibility(View.GONE);
+        fab.hide();
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    public void showUiElements(){
+        toolbarCardView.setVisibility(View.VISIBLE);
+        bottomNavigation.setVisibility(View.VISIBLE);
+//        fab.setEnabled(true);
+//        fab.setClickable(true);
+        fab.show();
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+    }
+
+    @Override
+    public void onClosed() {
+        showUiElements();
+    }
+
     @Override
     public void onClick(int position) {
+        dialog.dismiss();
+        hideUiElements();
+        MainActivity activity = ((MainActivity) getActivity());
+        orderShowView.setInfo(activity.getOrder(position));
 
+    }
+
+    public void showAddress(GeoCoordinate coordinate){
+        map.setCenter(coordinate,Map.Animation.NONE);
+        try {
+            Image image = new Image();
+            image.setImageResource(R.drawable.ic_marker);
+            map.addMapObject(new MapMarker(coordinate,image));
+        } catch (IOException e) {
+            Log.wtf(TAG,e);
+        }
     }
 
     // Вызывается, когда пользователь нажал назад. Возвращает true, если фрагмент обработал нажатие
@@ -243,6 +302,10 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
             return true;
         }else if(searchEditText.hasFocus()){
             loseFocus();
+            return true;
+        }else if(orderShowView.isShown()) {
+            orderShowView.hide();
+            showUiElements();
             return true;
         }else
             return false;
@@ -284,6 +347,8 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
                                 Map.Animation.NONE);
                         // Set the zoom level to the average between min and max
                         map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+
+                        ((MainActivity) getActivity()).initOrders();
 
                         try {
                             Image image = new Image();

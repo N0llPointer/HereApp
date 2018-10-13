@@ -9,20 +9,29 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.here.android.mpa.common.GeoCoordinate;
 import com.nollpointer.hereapp.fragments.LoginFragment;
 import com.nollpointer.hereapp.fragments.MapsFragment;
+import com.nollpointer.hereapp.fragments.OrderFragment;
+
+import java.util.ArrayList;
+import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "HereApp";
 
     private MapsFragment mapsFragment;
     private LoginFragment loginFragment;
+    private OrderFragment orderFragment;
 
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference shopsDatabaseReference;
+
+    private ArrayList<Order> orders;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,8 +61,30 @@ public class MainActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         shopsDatabaseReference = firebaseDatabase.getReference().child("shops");
 
+        orders = new ArrayList<>();
+
+        //initOrders();
 
         getSupportFragmentManager().beginTransaction().add(R.id.main_framelayout,loginFragment).commit();
+    }
+
+    public void initOrders(){
+        TreeMap<String,Integer> map = new TreeMap<>();
+
+        map.put("Яйца",10);
+        map.put("Пиво",2);
+        map.put("Хлеб",1);
+
+        Order order = new Order("ул. Пушкина, 12, кв. 101",new GeoCoordinate(45.041334, 41.962644),map);
+
+        orders.add(order);
+        orders.add(order);
+        orders.add(order);
+
+    }
+
+    public Order getOrder(int pos){
+        return orders.get(pos);
     }
 
     public void showMapsFragment(){
@@ -64,5 +95,13 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         if(!mapsFragment.onBackPressed())
             super.onBackPressed();
+    }
+
+    public void showAddress(GeoCoordinate coordinate){
+        mapsFragment.showAddress(coordinate);
+    }
+
+    public void addViewToMainFrameLayout(View view){
+        ((FrameLayout) findViewById(R.id.main_framelayout)).addView(view);
     }
 }

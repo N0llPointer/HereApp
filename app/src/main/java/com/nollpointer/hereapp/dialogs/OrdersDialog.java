@@ -16,13 +16,21 @@ import com.nollpointer.hereapp.adapters.OrderDialogAdapter;
 
 public class OrdersDialog extends BottomSheetDialogFragment{
 
+    OrderDialogAdapter.Listener listener;
+
+    public void setListener(OrderDialogAdapter.Listener listener){
+        this.listener = listener;
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.orders_dialog_layout,container,false);
         RecyclerView recyclerView = mainView.findViewById(R.id.order_dialog_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new OrderDialogAdapter());
+        OrderDialogAdapter adapter = new OrderDialogAdapter();
+        adapter.setListener(listener);
+        recyclerView.setAdapter(adapter);
         return mainView;
     }
 }
