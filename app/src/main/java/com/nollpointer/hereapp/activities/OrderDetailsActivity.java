@@ -1,32 +1,25 @@
-package com.nollpointer.hereapp.views;
+package com.nollpointer.hereapp.activities;
 
-import android.content.Context;
+import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nollpointer.hereapp.MainActivity;
 import com.nollpointer.hereapp.Order;
 import com.nollpointer.hereapp.R;
 import com.nollpointer.hereapp.adapters.BuyCardsAdapter;
+import com.nollpointer.hereapp.views.OrderShowView;
 
 import java.util.ArrayList;
 
-public class OrderShowView extends LinearLayout {
-
-    public static interface Listener{
-        void onClosed();
-
-        void onChoose();
-    }
-
-    private Listener listener;
-    private MainActivity activity;
+public class OrderDetailsActivity extends AppCompatActivity {
 
     private RecyclerView recycler;
     private Toolbar toolbar;
@@ -35,12 +28,10 @@ public class OrderShowView extends LinearLayout {
 
     private Order order;
 
-    public OrderShowView(Context context) {
-        super(context);
-        LayoutInflater inflater = LayoutInflater.from(context);
-        inflater.inflate(R.layout.fragment_order,this);
-
-        activity = ((MainActivity) context);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_order_details);
 
         recycler = findViewById(R.id.order_fragment_recycler_view);
         address = findViewById(R.id.order_fragment_address);
@@ -49,18 +40,15 @@ public class OrderShowView extends LinearLayout {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setVisibility(GONE);
-                listener.onClosed();
+                finish();
             }
         });
 
         Button button = findViewById(R.id.order_fragment_choose);
-        button.setOnClickListener(new OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onChoose();
-                hide();
-                listener.onClosed();
+
             }
         });
 
@@ -69,21 +57,12 @@ public class OrderShowView extends LinearLayout {
         address.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.showAddress(order.getCoordinates());
-                hide();
-                listener.onClosed();
+
             }
         });
 
-        recycler.setLayoutManager(new LinearLayoutManager(getContext()));
+        recycler.setLayoutManager(new LinearLayoutManager(this));
 
-
-        setVisibility(GONE);
-
-    }
-
-    public void setListener(Listener listener){
-        this.listener = listener;
     }
 
 
@@ -100,17 +79,7 @@ public class OrderShowView extends LinearLayout {
 
         recycler.setAdapter(new BuyCardsAdapter(list,counts));
 
-
-        setVisibility(VISIBLE);
     }
 
-
-    public void hide(){
-        setVisibility(GONE);
-    }
-
-    public boolean isShown(){
-        return getVisibility() == VISIBLE;
-    }
 
 }

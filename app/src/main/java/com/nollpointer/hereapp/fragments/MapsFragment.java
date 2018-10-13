@@ -39,7 +39,15 @@ import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
+import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.mapping.MapScreenMarker;
+import com.here.android.mpa.routing.CoreRouter;
+import com.here.android.mpa.routing.RouteOptions;
+import com.here.android.mpa.routing.RoutePlan;
+import com.here.android.mpa.routing.RouteResult;
+import com.here.android.mpa.routing.RouteWaypoint;
+import com.here.android.mpa.routing.Router;
+import com.here.android.mpa.routing.RoutingError;
 import com.nollpointer.hereapp.MainActivity;
 import com.nollpointer.hereapp.Order;
 import com.nollpointer.hereapp.adapters.OrderDialogAdapter;
@@ -205,7 +213,7 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         bottomNavigation.addItem(item3);
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
         bottomNavigation.setDefaultBackgroundColor(Color.WHITE);
-        bottomNavigation.setAccentColor(getResources().getColor(R.color.colorAccent));
+        bottomNavigation.setAccentColor(getResources().getColor(R.color.colorPick));
 
         AHNotification notification = new AHNotification.Builder()
                 .setText(Integer.toString(3))
@@ -268,9 +276,48 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
+    private void createRoute(){
+        CoreRouter router = new CoreRouter();
+        RoutePlan routePlan = new RoutePlan();
+        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.039496, 41.958023)));
+        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.041784, 41.965171)));
+        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.044148, 41.964796)));
+
+
+        RouteOptions routeOptions = new RouteOptions();
+        routeOptions.setTransportMode(RouteOptions.TransportMode.PEDESTRIAN);
+        routeOptions.setRouteType(RouteOptions.Type.FASTEST);
+
+        routePlan.setRouteOptions(routeOptions);
+
+        router.calculateRoute(routePlan, new Router.Listener<List<RouteResult>, RoutingError>() {
+            @Override
+            public void onProgress(int i) {
+
+            }
+
+            @Override
+            public void onCalculateRouteFinished(List<RouteResult> routeResults, RoutingError routingError) {
+                if (routingError == RoutingError.NONE) {
+                    // Render the route on the map
+                    MapRoute mapRoute = new MapRoute(routeResults.get(0).getRoute());
+                    map.addMapObject(mapRoute);
+                }
+                else {
+                    // Display a message indicating route calculation failure
+                }
+            }
+        });
+    }
+
     @Override
     public void onClosed() {
         showUiElements();
+    }
+
+    @Override
+    public void onChoose() {
+        createRoute();
     }
 
     @Override

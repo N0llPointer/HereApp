@@ -34,6 +34,7 @@
             android:layout_marginEnd="5dp"
             app:cardElevation="2dp"
             app:cardCornerRadius="5dp"
+            android:background="@color/colorAccent"
             android:id="@+id/maps_fragment_toolbar_card">
 
             <LinearLayout
@@ -47,6 +48,7 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     app:title="Google Play"
+                    android:background="@android:color/white"
                     android:layout_height="48dp">
 
                     <EditText
@@ -55,6 +57,8 @@
                         android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
                         android:hint="Search"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="#808080"
                         android:background="@android:color/transparent"
                         android:id="@+id/search_edit_text"
                         android:inputType="text"
@@ -113,6 +117,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        app:itemTextColor="@android:color/black"
+        app:itemIconTint="#808080"
+        android:background="@android:color/white"
         app:headerLayout="@layout/navigation_header"
         app:menu="@menu/drawer_menu" />
 

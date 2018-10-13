@@ -74,7 +74,10 @@ public class OrderFragment extends Fragment {
         ArrayList<String> list = new ArrayList<>();
         list.addAll(order.getProducts().keySet());
 
-        recycler.setAdapter(new BuyCardsAdapter(list));
+        ArrayList<Integer> counts = new ArrayList<>();
+        counts.addAll(order.getProducts().values());
+
+        recycler.setAdapter(new BuyCardsAdapter(list,counts));
         return mainView;
     }
 

@@ -13,9 +13,11 @@ import java.util.List;
 
 public class BuyCardsAdapter extends RecyclerView.Adapter<BuyCardsAdapter.ViewHolder>{
     private List<String> products;
+    private List<Integer> counts;
 
-    public BuyCardsAdapter(List<String> products) {
+    public BuyCardsAdapter(List<String> products, List<Integer> counts) {
         this.products = products;
+        this.counts = counts;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -37,8 +39,10 @@ public class BuyCardsAdapter extends RecyclerView.Adapter<BuyCardsAdapter.ViewHo
     @Override
     public void onBindViewHolder(BuyCardsAdapter.ViewHolder holder, final int position) {
         CardView card = holder.mCardView;
-        TextView text = card.findViewById(R.id.search_card_text);
+        TextView text = card.findViewById(R.id.buy_card_title);
         text.setText(products.get(position));
+        text = card.findViewById(R.id.buy_card_count);
+        text.setText(counts.get(position).toString());
     }
 
     @Override

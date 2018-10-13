@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         map.put("Пиво",2);
         map.put("Хлеб",1);
 
-        Order order = new Order("ул. Пушкина, 12, кв. 101",new GeoCoordinate(45.041334, 41.962644),map);
+        Order order = new Order("ул. Пушкина, 12, кв. 101",new GeoCoordinate(45.039496, 41.958023),map);
 
         orders.add(order);
         orders.add(order);
