@@ -1,4 +1,4 @@
-package com.nollpointer.hereapp;
+package com.nollpointer.hereapp.fragments;
 
 
 import android.os.Bundle;
@@ -9,7 +9,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
+import com.nollpointer.hereapp.MainActivity;
+import com.nollpointer.hereapp.R;
 
 
 public class LoginFragment extends Fragment {

@@ -1,45 +1,19 @@
 package com.nollpointer.hereapp;
 
-import android.content.Context;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.DrawerLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.drawable.DrawerArrowDrawable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.here.android.mpa.common.GeoCoordinate;
-import com.here.android.mpa.common.Image;
-import com.here.android.mpa.common.OnEngineInitListener;
-import com.here.android.mpa.common.ViewObject;
-import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.MapFragment;
-import com.here.android.mpa.mapping.MapGesture;
-import com.here.android.mpa.mapping.MapMarker;
-import com.here.android.mpa.mapping.MapObject;
-import com.here.android.mpa.mapping.MapScreenMarker;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import com.nollpointer.hereapp.fragments.LoginFragment;
+import com.nollpointer.hereapp.fragments.MapsFragment;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "HereApp";
@@ -64,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         getWindow().setStatusBarColor(Color.TRANSPARENT);
+
+        int permissionWrite = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int permissionRecord = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        if (permissionRecord != PackageManager.PERMISSION_GRANTED && permissionWrite != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+            return;
+        }
 
         mapsFragment = new MapsFragment();
         loginFragment = new LoginFragment();

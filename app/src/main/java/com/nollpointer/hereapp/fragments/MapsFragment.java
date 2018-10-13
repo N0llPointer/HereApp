@@ -1,9 +1,8 @@
-package com.nollpointer.hereapp;
+package com.nollpointer.hereapp.fragments;
 
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PointF;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,7 +19,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -30,11 +28,8 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.here.android.mpa.common.GeoCoordinate;
-import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.Image;
-import com.here.android.mpa.common.LocationDataSource;
 import com.here.android.mpa.common.OnEngineInitListener;
-import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.common.ViewObject;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
@@ -42,13 +37,16 @@ import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.MapScreenMarker;
+import com.nollpointer.hereapp.adapters.OrderDialogAdapter;
+import com.nollpointer.hereapp.dialogs.OrdersDialog;
+import com.nollpointer.hereapp.R;
+import com.nollpointer.hereapp.adapters.SearchResultCardsAdapter;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.List;
 
-public class MapsFragment extends Fragment {
+public class MapsFragment extends Fragment implements OrderDialogAdapter.Listener{
 
     public static final String TAG = "HereApp";
 
@@ -157,61 +155,51 @@ public class MapsFragment extends Fragment {
                 isEditTextHasFocus = hasFocus;
             }
         });
-        //TODO Разобраться с этой шляпой. Как меня она уже достала
+        //TODO Разобраться с этой шляпой. Как    меня она уже достала
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PositioningManager manager = PositioningManager.getInstance();
-                manager.start(PositioningManager.LocationMethod.GPS_NETWORK);
-                GeoPosition geo = manager.getPosition();
-                map.setCenter(geo.getCoordinate(),
-                        Map.Animation.LINEAR);
-
-                PositioningManager.OnPositionChangedListener positionListener = new
-                        PositioningManager.OnPositionChangedListener() {
-
-                            public void onPositionUpdated(PositioningManager.LocationMethod method,
-                                                          GeoPosition position, boolean isMapMatched) {
-                                    map.setCenter(position.getCoordinate(),
-                                            Map.Animation.NONE);
-                            }
-
-                            public void onPositionFixChanged(PositioningManager.LocationMethod method,
-                                                             PositioningManager.LocationStatus status) {
-
-                            }
-                        };
-
-                manager.addListener(new WeakReference<PositioningManager.OnPositionChangedListener>(positionListener));
+                map.setCenter(new GeoCoordinate(45.039496, 41.958023, 0.0),
+                        Map.Animation.BOW);
+                double zoom = map.getMinZoomLevel()/6 + map.getMaxZoomLevel()/1.5;
+                map.setZoomLevel(zoom);
             }
         });
 
         AHBottomNavigationItem item1 =
                 new AHBottomNavigationItem("Что рядом?",
-                        R.drawable.ic_nearby);
+                        R.drawable.ic_nearby_places);
 
-        AHBottomNavigationItem item2 =
-                new AHBottomNavigationItem("Акции",
-                        R.drawable.ic_sale);
+//        AHBottomNavigationItem item2 =
+//                new AHBottomNavigationItem("Купить",
+//                        R.drawable.ic_add_to_cart);
+
+        AHBottomNavigationItem item3 =
+                new AHBottomNavigationItem("Заказы",
+                        R.drawable.ic_cart);
+
         bottomNavigation.addItem(item1);
-        bottomNavigation.addItem(item2);
+        //bottomNavigation.addItem(item2);
+        bottomNavigation.addItem(item3);
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
         bottomNavigation.setDefaultBackgroundColor(Color.WHITE);
         bottomNavigation.setAccentColor(getResources().getColor(R.color.colorAccent));
+
+        AHNotification notification = new AHNotification.Builder()
+                .setText(Integer.toString(3))
+                .setBackgroundColor(Color.YELLOW)
+                .setTextColor(Color.BLACK)
+                .build();
+        // Adding notification to last item.
+        bottomNavigation.setNotification(notification, 1);
 
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
 
-                AHNotification notification = new AHNotification.Builder()
-                        .setText(Integer.toString(5))
-                        .setBackgroundColor(Color.YELLOW)
-                        .setTextColor(Color.BLACK)
-                        .build();
-                // Adding notification to last item.
-                bottomNavigation.setNotification(notification, position);
-                //notificationVisible = true;
-
+                if(position == 1){
+                    new OrdersDialog().show(getFragmentManager(),"TAG");
+                }
                 return true;
             }
         });
@@ -241,9 +229,16 @@ public class MapsFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onClick(int position) {
+
+    }
+
     // Вызывается, когда пользователь нажал назад. Возвращает true, если фрагмент обработал нажатие
     public boolean onBackPressed(){
-        if(drawerLayout.isDrawerOpen(Gravity.START)){
+        if(drawerLayout == null || searchEditText == null)
+            return false;
+        else if(drawerLayout.isDrawerOpen(Gravity.START)){
             drawerLayout.closeDrawer(Gravity.START);
             return true;
         }else if(searchEditText.hasFocus()){
@@ -286,7 +281,7 @@ public class MapsFragment extends Fragment {
                         map = mapFragment.getMap();
                         // Set the map center to the Vancouver region (no animation)
                         map.setCenter(new GeoCoordinate(45.039496, 41.958023, 0.0),
-                                Map.Animation.LINEAR);
+                                Map.Animation.NONE);
                         // Set the zoom level to the average between min and max
                         map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
 

@@ -1,12 +1,12 @@
-package com.nollpointer.hereapp;
+package com.nollpointer.hereapp.adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nollpointer.hereapp.R;
 
 public class SearchResultCardsAdapter extends RecyclerView.Adapter<SearchResultCardsAdapter.ViewHolder> {
 //

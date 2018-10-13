@@ -15,11 +15,40 @@
     </group>
 
     <group android:checkableBehavior="single"
+        android:menuCategory="system"
         >
         <item
             android:id="@+id/settings"
-            android:icon="@drawable/ic_marker"
+            android:icon="@drawable/ic_settings"
             android:title="Настройки" />
+
+        <item
+            android:icon="@drawable/ic_marker"
+            android:title="Избраное" />
+    </group>
+
+    <group android:checkableBehavior="all"
+        android:menuCategory="alternative"
+        >
+        <item
+            android:icon="@drawable/ic_settings"
+            android:title="Настройки" />
+
+        <item
+            android:icon="@drawable/ic_marker"
+            android:title="Избраное" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:menuCategory="secondary"
+        >
+        <item
+            android:icon="@drawable/ic_settings"
+            android:title="Настройки" />
+
+        <item
+            android:icon="@drawable/ic_marker"
+            android:title="Избраное" />
     </group>
 
 </menu>
