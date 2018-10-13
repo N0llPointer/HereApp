@@ -12,12 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.nollpointer.hereapp.Order;
 import com.nollpointer.hereapp.R;
 import com.nollpointer.hereapp.adapters.OrderDialogAdapter;
+
+import java.util.ArrayList;
 
 public class OrdersDialog extends BottomSheetDialogFragment{
 
     OrderDialogAdapter.Listener listener;
+    RecyclerView recyclerView;
+
+    ArrayList<Order> orders;
 
     public void setListener(OrderDialogAdapter.Listener listener){
         this.listener = listener;
@@ -27,8 +33,7 @@ public class OrdersDialog extends BottomSheetDialogFragment{
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View mainView = inflater.inflate(R.layout.orders_dialog_layout,container,false);
-        RecyclerView recyclerView = mainView.findViewById(R.id.order_dialog_recycler);
-        OrderDialogAdapter adapter = new OrderDialogAdapter();
+        recyclerView = mainView.findViewById(R.id.order_dialog_recycler);
 
         LinearLayoutManager linearLayout = new LinearLayoutManager(getContext());
 
@@ -37,11 +42,20 @@ public class OrdersDialog extends BottomSheetDialogFragment{
 
         //dividerItemDecoration.setDrawable(g);
 
-        adapter.setListener(listener);
 
         recyclerView.setLayoutManager(linearLayout);
         recyclerView.addItemDecoration(dividerItemDecoration);
+
+        OrderDialogAdapter adapter = new OrderDialogAdapter(orders);
+        adapter.setListener(listener);
         recyclerView.setAdapter(adapter);
+
         return mainView;
     }
+
+
+    public void setInfo(ArrayList<Order> list){
+        this.orders = list;
+    }
+
 }

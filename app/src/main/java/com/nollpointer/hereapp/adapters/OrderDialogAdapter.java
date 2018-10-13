@@ -7,10 +7,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.nollpointer.hereapp.Order;
 import com.nollpointer.hereapp.R;
+
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 
 public class OrderDialogAdapter extends RecyclerView.Adapter<OrderDialogAdapter.ViewHolder> {
     Listener listener;
+    ArrayList<Order> orders;
+
+    public OrderDialogAdapter(ArrayList<Order> orders) {
+        this.orders = orders;
+    }
 
     public static interface Listener {
         void onClick(int position);
@@ -40,6 +50,10 @@ public class OrderDialogAdapter extends RecyclerView.Adapter<OrderDialogAdapter.
     public void onBindViewHolder(OrderDialogAdapter.ViewHolder holder, final int position) {
         CardView card = holder.mCardView;
         TextView text = card.findViewById(R.id.order_dialog_title);
+        text.setText(orders.get(position).getAddress());
+
+        TextView address = card.findViewById(R.id.order_dialog_address);
+        address.setText(orders.get(position).getAddress());
 
         card.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +65,7 @@ public class OrderDialogAdapter extends RecyclerView.Adapter<OrderDialogAdapter.
 
     @Override
     public int getItemCount() {
-        return 3;
+        return orders.size();
     }
 
 }

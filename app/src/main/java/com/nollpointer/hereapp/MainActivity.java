@@ -19,6 +19,8 @@ import com.nollpointer.hereapp.fragments.MapsFragment;
 import com.nollpointer.hereapp.fragments.OrderFragment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,17 +71,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void initOrders(){
-        TreeMap<String,Integer> map = new TreeMap<>();
+        //TreeMap<String,Integer> map = new TreeMap<>();
 
-        map.put("Яйца",10);
-        map.put("Пиво",2);
-        map.put("Хлеб",1);
+//        map.put("Яйца",10);
+//        map.put("Пиво",2);
+//        map.put("Хлеб",1);
 
-        Order order = new Order("ул. Пушкина, 12, кв. 101",new GeoCoordinate(45.039496, 41.958023),map);
+        Order order0 = new Order("ул. Пушкина, 12, кв. 666",new GeoCoordinate(45.037049, 41.983381),getMap());
+        Order order1 = new Order("ул. Макарова, 13, кв. 12",new GeoCoordinate(45.046667, 41.963441),getMap());
+        Order order2 = new Order("ул. Мира, 14, кв. 44",new GeoCoordinate(45.033755, 41.936952),getMap());
+        Order order3 = new Order("ул. Пирогова, 15, кв. 1",new GeoCoordinate(45.035776, 41.951661),getMap());
+        Order order4 = new Order("ул. Тельмана, 166, кв. 989",new GeoCoordinate(45.034540, 41.963892),getMap());
+        orders.add(order0);
+        orders.add(order1);
+        orders.add(order2);
+        orders.add(order3);
+        orders.add(order4);
 
-        orders.add(order);
-        orders.add(order);
-        orders.add(order);
+    }
+
+    public ArrayList<Order> getOrders(){
+        return orders;
+    }
+
+    private TreeMap<String,Integer> getMap(){
+
+        Random random = new Random();
+        TreeMap<String,Integer> treeMap = new TreeMap<>();
+        String prods = "Яйца Молоко Пиво Колбаса Сосиски Хлеб Чипсы Кефир Чай Свинина Курица Майонез Сыр Помидоры Картофель Яблоки Кетчуп Рыба Апельсины Кофе Водка Грибы Макароны Каша Рис";
+        String[] positions = prods.toLowerCase().split(" ");
+
+        int max = random.nextInt(6) + 3;
+
+        for(int i=0;i<max;i++){
+            treeMap.put(positions[random.nextInt(positions.length)],random.nextInt(10));
+        }
+
+        return treeMap;
 
     }
 
@@ -103,5 +131,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void addViewToMainFrameLayout(View view){
         ((FrameLayout) findViewById(R.id.main_framelayout)).addView(view);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
     }
 }

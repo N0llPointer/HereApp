@@ -22,7 +22,7 @@ public class OrderShowView extends LinearLayout {
     public static interface Listener{
         void onClosed();
 
-        void onChoose();
+        void onChoose(Order order);
     }
 
     private Listener listener;
@@ -58,7 +58,7 @@ public class OrderShowView extends LinearLayout {
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onChoose();
+                listener.onChoose(order);
                 hide();
                 listener.onClosed();
             }

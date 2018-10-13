@@ -58,6 +58,7 @@ import com.nollpointer.hereapp.views.OrderShowView;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsFragment extends Fragment implements OrderDialogAdapter.Listener, OrderShowView.Listener{
@@ -80,6 +81,8 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
     private FloatingActionButton fab;
     private FrameLayout container;
 
+    private ArrayList<MapRoute> routes;
+
     private CardView toolbarCardView;
 
     private OrdersDialog dialog;
@@ -101,6 +104,7 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         // Inflate the layout for this fragment
         mainView = inflater.inflate(R.layout.fragment_maps, container, false);
 
+        routes = new ArrayList<>();
 
         initializeViews();
 
@@ -191,7 +195,7 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
             public void onClick(View v) {
                 map.setCenter(new GeoCoordinate(45.039496, 41.958023, 0.0),
                         Map.Animation.BOW);
-                double zoom = map.getMinZoomLevel()/6 + map.getMaxZoomLevel()/1.5;
+                double zoom = 16;
                 map.setZoomLevel(zoom);
             }
         });
@@ -199,10 +203,6 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         AHBottomNavigationItem item1 =
                 new AHBottomNavigationItem("Что рядом?",
                         R.drawable.ic_nearby_places);
-
-//        AHBottomNavigationItem item2 =
-//                new AHBottomNavigationItem("Купить",
-//                        R.drawable.ic_add_to_cart);
 
         AHBottomNavigationItem item3 =
                 new AHBottomNavigationItem("Заказы",
@@ -215,13 +215,6 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         bottomNavigation.setDefaultBackgroundColor(Color.WHITE);
         bottomNavigation.setAccentColor(getResources().getColor(R.color.colorPick));
 
-        AHNotification notification = new AHNotification.Builder()
-                .setText(Integer.toString(3))
-                .setBackgroundColor(Color.YELLOW)
-                .setTextColor(Color.BLACK)
-                .build();
-        // Adding notification to last item.
-        bottomNavigation.setNotification(notification, 1);
 
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
@@ -230,12 +223,15 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
                 if(position == 1){
                     dialog = new OrdersDialog();
                     dialog.setListener(MapsFragment.this);
+                    dialog.setInfo(((MainActivity) getActivity()).getOrders());
                     dialog.show(getFragmentManager(),"TAG");
                 }
                 return true;
             }
         });
     }
+
+
 
 
     private void showSearchUi(){
@@ -276,13 +272,20 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
-    private void createRoute(){
+    private void createRoute(Order lastPointAddress){
         CoreRouter router = new CoreRouter();
         RoutePlan routePlan = new RoutePlan();
-        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.039496, 41.958023)));
-        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.041784, 41.965171)));
-        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.044148, 41.964796)));
+        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(45.039559, 41.957699)));
+        routePlan.addWaypoint(new RouteWaypoint(lastPointAddress.getCoordinates()));
 
+        Image image = new Image();
+        try {
+            image.setImageResource(R.drawable.ic_marker);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        MapMarker marker = new MapMarker(lastPointAddress.getCoordinates(),image);
+        map.addMapObject(marker);
 
         RouteOptions routeOptions = new RouteOptions();
         routeOptions.setTransportMode(RouteOptions.TransportMode.PEDESTRIAN);
@@ -301,6 +304,9 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
                 if (routingError == RoutingError.NONE) {
                     // Render the route on the map
                     MapRoute mapRoute = new MapRoute(routeResults.get(0).getRoute());
+
+                    routes.add(mapRoute);
+
                     map.addMapObject(mapRoute);
                 }
                 else {
@@ -316,8 +322,8 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
     }
 
     @Override
-    public void onChoose() {
-        createRoute();
+    public void onChoose(Order order) {
+        createRoute(order);
     }
 
     @Override
@@ -358,18 +364,6 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
             return false;
     }
 
-//    @Override
-//    public void onBackPressed() {
-//        if(drawerLayout.isDrawerOpen(Gravity.START))
-//            drawerLayout.closeDrawer(Gravity.START);
-//        else if(searchEditText.hasFocus())
-//            loseFocus();
-//        else
-//            super.onBackPressed();
-//    }
-
-
-
     private void initialize() {
 
         // Set up disk cache path for the map service for this application
@@ -393,17 +387,25 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
                         map.setCenter(new GeoCoordinate(45.039496, 41.958023, 0.0),
                                 Map.Animation.NONE);
                         // Set the zoom level to the average between min and max
-                        map.setZoomLevel((map.getMaxZoomLevel() + map.getMinZoomLevel()) / 2);
+                        map.setZoomLevel(16);
 
                         ((MainActivity) getActivity()).initOrders();
 
                         try {
                             Image image = new Image();
-                            image.setImageResource(R.drawable.ic_marker);
+                            image.setImageResource(R.drawable.ic_current_location_marker);
                             map.addMapObject(new MapMarker(new GeoCoordinate(45.039496, 41.958023),image));
                         } catch (IOException e) {
                             Log.wtf(TAG,e);
                         }
+
+                        AHNotification notification = new AHNotification.Builder()
+                                .setText(Integer.toString(((MainActivity) getActivity()).getOrders().size()))
+                                .setBackgroundColor(Color.YELLOW)
+                                .setTextColor(Color.BLACK)
+                                .build();
+                        // Adding notification to last item.
+                        bottomNavigation.setNotification(notification, 1);
 
                         mapFragment.getMapGesture().addOnGestureListener(new MapGesture.OnGestureListener.OnGestureListenerAdapter() {
 
@@ -415,6 +417,10 @@ public class MapsFragment extends Fragment implements OrderDialogAdapter.Listene
                                         MapMarker marker = (MapMarker) v;
                                         //GeoCoordinate coords = marker.getCoordinate();
                                         Snackbar.make(mainView.findViewById(R.id.container),"Marker is clicked",Snackbar.LENGTH_SHORT).show();
+                                        break;
+                                    }else if(m instanceof MapRoute){
+                                        map.removeMapObject(m);
+                                        Snackbar.make(mainView.findViewById(R.id.container),"MapRoute is clicked",Snackbar.LENGTH_SHORT).show();
                                         break;
                                     }
                                 }
