@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
@@ -26,8 +27,15 @@ public class MessageService extends FirebaseMessagingService {
         super.onMessageReceived(remoteMessage);
 
         if(!remoteMessage.getData().isEmpty()){
+            saveToFile();
             sendNotification("Address",remoteMessage.getData().get("Coords"));
         }
+    }
+
+    private void saveToFile(){
+        SharedPreferences.Editor editor = this.getSharedPreferences("SETTINGS",Context.MODE_PRIVATE).edit();
+        editor.putBoolean("ShowTestRouteInfo",true);
+        editor.apply();
     }
 
     private void sendNotification(String address,String coords){
@@ -35,10 +43,11 @@ public class MessageService extends FirebaseMessagingService {
         double first = Double.valueOf(c[0]);
         double second = Double.valueOf(c[1]);
 
-        Intent intent = new Intent(this, OrderDetailsActivity.class);
+        Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("Address",address);
         intent.putExtra("Coords",coords);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.putExtra("HORK","PORK");
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 0);
         String channelId = "channel";

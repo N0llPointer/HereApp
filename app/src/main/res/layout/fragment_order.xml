@@ -14,7 +14,7 @@
         android:layout_height="?android:actionBarSize"
         android:background="@color/colorAutist"
         android:id="@+id/order_fragment_toolbar"
-        app:title="Order"
+        app:title="Заказ"
         app:titleTextColor="@android:color/white"/>
 
     <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"

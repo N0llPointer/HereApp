@@ -1,12 +1,16 @@
 package com.nollpointer.hereapp;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -23,6 +27,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.TreeMap;
 
+import static android.media.MediaCodec.MetricsConstants.MODE;
+
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "HereApp";
 
@@ -34,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference shopsDatabaseReference;
 
     private ArrayList<Order> orders;
+
+    private boolean isFromIntent = false;
+    private boolean isTestRoute;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        SharedPreferences prefs = this.getSharedPreferences("SETTINGS", Context.MODE_PRIVATE);
+        isTestRoute = prefs.getBoolean("ShowTestRouteInfo",false) || getIntent().getDoubleExtra("Coords",0) != 0;
+        Log.wtf(TAG, "onCreate: " + isTestRoute);
+
         mapsFragment = new MapsFragment();
         loginFragment = new LoginFragment();
 
@@ -67,7 +80,20 @@ public class MainActivity extends AppCompatActivity {
 
         //initOrders();
 
+        new setNewPreferences(isTestRoute).doInBackground(this);
+
+
+        if(isTestRoute){
+            getSupportFragmentManager().beginTransaction().add(R.id.main_framelayout,mapsFragment).commit();
+            //isFromIntent = true;
+            return;
+        }
+
         getSupportFragmentManager().beginTransaction().add(R.id.main_framelayout,loginFragment).commit();
+    }
+
+    public boolean isTestRoute(){
+        return isTestRoute;
     }
 
     public void initOrders(){
@@ -92,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<Order> getOrders(){
         return orders;
+    }
+
+    public boolean isFromIntent(){
+        return isFromIntent;
     }
 
     private TreeMap<String,Integer> getMap(){
@@ -144,4 +174,22 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
 
     }
+
+
+    protected static class setNewPreferences extends AsyncTask<MainActivity,Void,Void> {
+        boolean isTest;
+
+        setNewPreferences(boolean mode){
+            this.isTest = mode;
+        }
+
+        @Override
+        protected Void doInBackground(MainActivity... mainActivities) {
+            SharedPreferences.Editor editor = mainActivities[0].getSharedPreferences("SETTINGS",Context.MODE_PRIVATE).edit();
+            editor.putBoolean("ShowTestRouteInfo",false);
+            editor.apply();
+            return null;
+        }
+    }
+
 }
