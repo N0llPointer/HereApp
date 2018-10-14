@@ -1,3 +1,3 @@
 # HereApp
 
-Hackathon project. Well, now its just lots of boilerplate. Soon it will be great. 
+Проект для хакатона. Приложение для курьера. С сервера получает список возможных адресов и в случае, если добавлен новый адрес, вылетает пуш уведомление при помощи сервиса Firebase.
